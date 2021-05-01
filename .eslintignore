@@ -1,0 +1,7 @@
+/node_modules
+webpack.config.js
+.babelrc
+*.md
+package*
+main.*
+bundle.*
