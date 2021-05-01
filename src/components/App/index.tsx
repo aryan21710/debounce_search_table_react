@@ -11,23 +11,23 @@ export const App: React.FC = () => {
     const [userInput, setUserInput] = useState<string>('');
     const [tableData, setTableData] = useState<IType[]>(data);
 
-    const filterTable = ()=>{
-        const filteredData = data.filter((data)=>data.company.toLowerCase().includes(userInput)
-         || data.city.toLowerCase().includes(userInput)
-         || data.domain.toLowerCase().includes(userInput));
+    const debouncedData = useCallback(debounce((value: string)=>{
+        const filteredData = data.filter((data)=>data.company.toLowerCase().includes(value)
+       || data.city.toLowerCase().includes(value)
+       || data.domain.toLowerCase().includes(value));
         // eslint-disable-next-line no-console
         console.log('filteredData', filteredData);
         filteredData.length === data.length ?  setTableData([...data]) : setTableData([...filteredData]);
-    };
+    }, 1000), []);
 
-    const debouncedData = useCallback(debounce(filterTable, 1000), [userInput]);
 
-    useEffect(() => {
-        debouncedData();
-    }, [userInput]);
 
     const onChangeHandler:
-    (event: React.ChangeEvent<HTMLInputElement>) => void = (event) => setUserInput(event.target.value);
+    (event: React.ChangeEvent<HTMLInputElement>) => void = (event) => {
+        const { value: nextValue } = event.target;
+        setUserInput(nextValue);
+        debouncedData(nextValue);
+    };
 
 
     return (
